@@ -220,6 +220,17 @@ export default function TerminalLector() {
             {errorCamara}
           </p>
         )}
+        <div className="mt-8 border-t pt-6">
+  <button
+    type="button"
+    onClick={() => {
+      window.location.href = "/admin"
+    }}
+    className="w-full rounded-xl border border-black py-4 font-semibold"
+  >
+    📊 Panel de administración
+  </button>
+</div>
 
       </div>
     </main>
