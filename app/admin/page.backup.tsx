@@ -1,4 +1,4 @@
-﻿import Link from "next/link"
+import Link from "next/link"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { createClient } from "@supabase/supabase-js"
@@ -8,7 +8,6 @@ import {
   sesionTerminalValida,
 } from "../../lib/terminal-auth"
 import BotonCerrarSesion from "../terminal/BotonCerrarSesion"
-import RestablecerPin from "./RestablecerPin"
 
 const insignias = [
   {
@@ -245,10 +244,6 @@ export default async function AdminPage() {
             </a>
           </div>
         </div>
-
-                {/* RESTABLECIMIENTO DE PIN */}
-
-        <RestablecerPin />
 
         {/* ESTADÍSTICAS PRINCIPALES */}
 
