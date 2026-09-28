@@ -9,6 +9,34 @@ import {
 } from "../../lib/terminal-auth"
 import BotonCerrarSesion from "../terminal/BotonCerrarSesion"
 
+const insignias = [
+  {
+    nombre: "Primer bocado",
+    compras: 1,
+    icono: "🌱",
+  },
+  {
+    nombre: "Cliente habitual",
+    compras: 5,
+    icono: "🔥",
+  },
+  {
+    nombre: "Fan de Ancla",
+    compras: 10,
+    icono: "🌯",
+  },
+  {
+    nombre: "Cliente VIP",
+    compras: 25,
+    icono: "⭐",
+  },
+  {
+    nombre: "Leyenda Ancla",
+    compras: 50,
+    icono: "👑",
+  },
+]
+
 export default async function AdminPage() {
   const cookieStore = await cookies()
 
@@ -110,6 +138,33 @@ export default async function AdminPage() {
           recompensa.puntosNecesarios
       )
     ).length ?? 0
+
+  const obtenerComprasCliente = (
+    clienteId: string | number
+  ) =>
+    compras?.filter(
+      (compra) =>
+        String(compra.cliente_id) ===
+        String(clienteId)
+    ).length ?? 0
+
+  const clientesConInsignias =
+    clientes?.filter(
+      (cliente) =>
+        obtenerComprasCliente(cliente.id) >= 1
+    ).length ?? 0
+
+  const totalPorInsignia = insignias.map(
+    (insignia) => ({
+      ...insignia,
+      clientes:
+        clientes?.filter(
+          (cliente) =>
+            obtenerComprasCliente(cliente.id) >=
+            insignia.compras
+        ).length ?? 0,
+    })
+  )
 
   return (
     <main className="min-h-screen bg-gray-50 p-6 text-black">
@@ -310,6 +365,51 @@ export default async function AdminPage() {
           </div>
         </div>
 
+        {/* RESUMEN DE INSIGNIAS */}
+
+        <div className="mt-8 rounded-2xl bg-white p-6 shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-bold">
+                🏆 Insignias de clientes
+              </h2>
+
+              <p className="mt-1 text-sm text-gray-500">
+                Fidelidad según el número de compras realizadas
+              </p>
+            </div>
+
+            <span className="rounded-full bg-black px-3 py-1 text-sm font-semibold text-white">
+              {clientesConInsignias} CON INSIGNIAS
+            </span>
+          </div>
+
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {totalPorInsignia.map((insignia) => (
+              <div
+                key={insignia.nombre}
+                className="rounded-2xl border p-4 text-center"
+              >
+                <p className="text-4xl">
+                  {insignia.icono}
+                </p>
+
+                <p className="mt-2 font-bold">
+                  {insignia.nombre}
+                </p>
+
+                <p className="mt-1 text-3xl font-bold">
+                  {insignia.clientes}
+                </p>
+
+                <p className="mt-1 text-xs text-gray-500">
+                  clientes · {insignia.compras}+ compras
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* CLIENTES */}
 
         <div className="mt-8 rounded-2xl bg-white p-6 shadow-sm">
@@ -342,6 +442,10 @@ export default async function AdminPage() {
                   </th>
 
                   <th className="p-3">
+                    🏆 Insignias
+                  </th>
+
+                  <th className="p-3">
                     Saldo
                   </th>
 
@@ -357,50 +461,106 @@ export default async function AdminPage() {
 
               <tbody>
                 {clientes && clientes.length > 0 ? (
-                  clientes.map((cliente) => (
-                    <tr
-                      key={cliente.id}
-                      className="border-b last:border-0"
-                    >
-                      <td className="p-3 font-semibold">
-                        {cliente.nombre ||
-                          "Sin nombre"}
-                      </td>
+                  clientes.map((cliente) => {
+                    const numeroCompras =
+                      obtenerComprasCliente(cliente.id)
 
-                      <td className="p-3">
-                        <span className="font-bold">
-                          {cliente.puntos ?? 0}
-                        </span>
-                      </td>
+                    const insigniasConseguidas =
+                      insignias.filter(
+                        (insignia) =>
+                          numeroCompras >=
+                          insignia.compras
+                      )
 
-                      <td className="p-3 text-sm">
-                        {Number(
-                          cliente.saldo_euros ?? 0
-                        ).toFixed(2)}{" "}
-                        €
-                      </td>
+                    return (
+                      <tr
+                        key={cliente.id}
+                        className="border-b last:border-0"
+                      >
+                        <td className="p-3 font-semibold">
+                          {cliente.nombre ||
+                            "Sin nombre"}
+                        </td>
 
-                      <td className="p-3 text-sm text-gray-500">
-                        {cliente.created_at
-                          ? new Date(
-                              cliente.created_at
-                            ).toLocaleDateString(
-                              "es-ES"
-                            )
-                          : "—"}
-                      </td>
+                        <td className="p-3">
+                          <span className="font-bold">
+                            {cliente.puntos ?? 0}
+                          </span>
+                        </td>
 
-                      <td className="p-3">
-                        <span className="rounded-full bg-green-50 px-3 py-1 text-sm font-semibold text-green-700">
-                          ● Activo
-                        </span>
-                      </td>
-                    </tr>
-                  ))
+                        <td className="p-3">
+                          {insigniasConseguidas.length >
+                          0 ? (
+                            <div>
+                              <div className="flex flex-wrap gap-1">
+                                {insigniasConseguidas.map(
+                                  (insignia) => (
+                                    <span
+                                      key={
+                                        insignia.nombre
+                                      }
+                                      title={
+                                        insignia.nombre
+                                      }
+                                      className="rounded-full bg-gray-100 px-2 py-1 text-lg"
+                                    >
+                                      {
+                                        insignia.icono
+                                      }
+                                    </span>
+                                  )
+                                )}
+                              </div>
+
+                              <p className="mt-1 text-xs text-gray-500">
+                                {numeroCompras}{" "}
+                                {numeroCompras === 1
+                                  ? "compra"
+                                  : "compras"}
+                              </p>
+                            </div>
+                          ) : (
+                            <div>
+                              <span className="text-sm text-gray-400">
+                                Sin insignias
+                              </span>
+
+                              <p className="mt-1 text-xs text-gray-400">
+                                {numeroCompras} compras
+                              </p>
+                            </div>
+                          )}
+                        </td>
+
+                        <td className="p-3 text-sm">
+                          {Number(
+                            cliente.saldo_euros ?? 0
+                          ).toFixed(2)}{" "}
+                          €
+                        </td>
+
+                        <td className="p-3 text-sm text-gray-500">
+                          {cliente.created_at
+                            ? new Date(
+                                cliente.created_at
+                              ).toLocaleDateString(
+                                "es-ES"
+                              )
+                            : "—"}
+                        </td>
+
+                        <td className="p-3">
+                          <span className="rounded-full bg-green-50 px-3 py-1 text-sm font-semibold text-green-700">
+                            ● Activo
+                          </span>
+                        </td>
+                      </tr>
+                    )
+                  })
                 ) : (
                   <tr>
                     <td
-                      colSpan={5}
+                      colSpan={6}
                       className="p-6 text-center text-gray-500"
                     >
                       Todavía no hay clientes
@@ -588,8 +748,7 @@ export default async function AdminPage() {
               <p className="text-2xl">🧾</p>
 
               <p className="mt-2 text-gray-500">
-                Todavía no hay compras
-                registradas.
+                Todavía no hay compras registradas.
               </p>
             </div>
           )}
