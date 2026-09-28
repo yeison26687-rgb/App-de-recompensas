@@ -4,46 +4,27 @@ import { randomBytes, scryptSync } from "crypto"
 
 function crearHashPin(pin: string) {
   const salt = randomBytes(16).toString("hex")
-
-  const hash = scryptSync(
-    pin,
-    salt,
-    64
-  ).toString("hex")
+  const hash = scryptSync(pin, salt, 64).toString("hex")
 
   return `${salt}:${hash}`
 }
 
 export async function POST(request: Request) {
   try {
-    const {
-      nombre,
-      telefono,
-      email,
-      pin,
-      privacidadAceptada,
-      ofertasAceptadas,
-    } = await request.json()
+    const { nombre, telefono, email, pin } =
+      await request.json()
 
     const nombreLimpio =
-      typeof nombre === "string"
-        ? nombre.trim()
-        : ""
+      typeof nombre === "string" ? nombre.trim() : ""
 
     const telefonoLimpio =
-      typeof telefono === "string"
-        ? telefono.trim()
-        : ""
+      typeof telefono === "string" ? telefono.trim() : ""
 
     const emailLimpio =
-      typeof email === "string"
-        ? email.trim()
-        : ""
+      typeof email === "string" ? email.trim() : ""
 
     const pinLimpio =
-      typeof pin === "string"
-        ? pin.trim()
-        : ""
+      typeof pin === "string" ? pin.trim() : ""
 
     if (!nombreLimpio || !telefonoLimpio) {
       return NextResponse.json(
@@ -60,18 +41,6 @@ export async function POST(request: Request) {
         {
           error:
             "El PIN debe tener exactamente 4 números.",
-        },
-        { status: 400 }
-      )
-    }
-
-    // La aceptación obligatoria también se valida
-    // en el servidor, no solamente en la pantalla.
-    if (privacidadAceptada !== true) {
-      return NextResponse.json(
-        {
-          error:
-            "Debes confirmar que has sido informado sobre el tratamiento de tus datos.",
         },
         { status: 400 }
       )
@@ -121,14 +90,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const pinHash =
-      crearHashPin(pinLimpio)
-
-    const ahora =
-      new Date().toISOString()
-
-    const aceptaOfertas =
-      ofertasAceptadas === true
+    const pinHash = crearHashPin(pinLimpio)
 
     const { data, error } =
       await supabaseAdmin
@@ -139,21 +101,8 @@ export async function POST(request: Request) {
           email: emailLimpio || null,
           puntos: 0,
           pin_hash: pinHash,
-
-          privacidad_aceptada_at:
-            ahora,
-
-          ofertas_aceptadas:
-            aceptaOfertas,
-
-          ofertas_aceptadas_at:
-            aceptaOfertas
-              ? ahora
-              : null,
         })
-        .select(
-          "id, nombre, puntos"
-        )
+        .select("id, nombre, puntos")
         .single()
 
     if (error) {
@@ -193,8 +142,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       {
-        error:
-          "Error interno del servidor.",
+        error: "Error interno del servidor.",
       },
       { status: 500 }
     )

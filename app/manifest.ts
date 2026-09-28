@@ -3,12 +3,17 @@ import type { MetadataRoute } from "next"
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "ANCLA KEBAB",
-    short_name: "ANCLA",
+    short_name: "ANCLA KEBAB",
     description: "Programa de fidelización de ANCLA KEBAB",
+
     start_url: "/terminal",
+    scope: "/",
+
     display: "standalone",
+
     background_color: "#ffffff",
     theme_color: "#ffffff",
+
     icons: [
       {
         src: "/icon-192.png",

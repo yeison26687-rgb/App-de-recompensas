@@ -9,18 +9,13 @@ export default function RegistroCliente() {
   const router = useRouter()
 
   const [nombre, setNombre] = useState("")
-  const [telefono, setTelefono] = useState("")
+  const [telefono, setTelefono] =
+    useState("")
   const [email, setEmail] = useState("")
   const [pin, setPin] = useState("")
-
-  const [privacidadAceptada, setPrivacidadAceptada] =
-    useState(false)
-
-  const [ofertasAceptadas, setOfertasAceptadas] =
-    useState(false)
-
   const [error, setError] = useState("")
-  const [guardando, setGuardando] = useState(false)
+  const [guardando, setGuardando] =
+    useState(false)
 
   async function registrarCliente() {
     if (!nombre.trim() || !telefono.trim()) {
@@ -33,13 +28,6 @@ export default function RegistroCliente() {
     if (!/^\d{4}$/.test(pin)) {
       setError(
         "El PIN debe tener exactamente 4 números."
-      )
-      return
-    }
-
-    if (!privacidadAceptada) {
-      setError(
-        "Debes confirmar que has leído la información sobre protección de datos."
       )
       return
     }
@@ -61,8 +49,6 @@ export default function RegistroCliente() {
             telefono,
             email,
             pin,
-            privacidadAceptada,
-            ofertasAceptadas,
           }),
         }
       )
@@ -235,104 +221,6 @@ export default function RegistroCliente() {
               </p>
             </div>
 
-
-            {/* PROTECCION DE DATOS */}
-
-            <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
-
-              <div className="flex items-center gap-2">
-                <span className="text-xl">
-                  🔒
-                </span>
-
-                <p className="font-bold">
-                  Protección de datos
-                </p>
-              </div>
-
-              <p className="mt-3 text-sm leading-6 text-gray-600">
-                Tus datos se utilizarán para
-                gestionar tu participación en el
-                programa de fidelización, incluyendo
-                tu cuenta, puntos, insignias y
-                recompensas.
-              </p>
-
-              <label className="mt-5 flex cursor-pointer items-start gap-3">
-                <input
-                  type="checkbox"
-                  checked={privacidadAceptada}
-                  onChange={(e) =>
-                    setPrivacidadAceptada(
-                      e.target.checked
-                    )
-                  }
-                  disabled={guardando}
-                  className="mt-1 h-5 w-5 shrink-0 accent-black"
-                />
-
-                <span className="text-sm leading-6 text-gray-700">
-                  <strong>
-                    He leído la{" "}
-                    <Link
-                      href="/privacidad"
-                      target="_blank"
-                      className="underline underline-offset-2"
-                    >
-                      Política de Privacidad
-                    </Link>
-                  </strong>{" "}
-                  y he sido informado sobre el
-                  tratamiento de mis datos personales
-                  para gestionar mi cuenta y mi
-                  participación en el programa de
-                  fidelización.{" "}
-                  <span className="font-semibold">
-                    (Obligatorio)
-                  </span>
-                </span>
-              </label>
-
-
-              <div className="my-5 border-t border-gray-200" />
-
-
-              <label className="flex cursor-pointer items-start gap-3">
-                <input
-                  type="checkbox"
-                  checked={ofertasAceptadas}
-                  onChange={(e) =>
-                    setOfertasAceptadas(
-                      e.target.checked
-                    )
-                  }
-                  disabled={guardando}
-                  className="mt-1 h-5 w-5 shrink-0 accent-black"
-                />
-
-                <span className="text-sm leading-6 text-gray-700">
-                  <strong>
-                    Quiero recibir ofertas,
-                    promociones y novedades
-                  </strong>{" "}
-                  del establecimiento a través de
-                  los datos de contacto que he
-                  facilitado.{" "}
-                  <span className="text-gray-500">
-                    (Opcional)
-                  </span>
-                </span>
-              </label>
-
-              <p className="mt-4 text-xs leading-5 text-gray-400">
-                Puedes participar en el programa
-                aunque no aceptes recibir
-                comunicaciones promocionales.
-              </p>
-
-            </div>
-
-
             {error && (
               <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-700">
                 ❌ {error}
@@ -342,19 +230,14 @@ export default function RegistroCliente() {
             <button
               type="button"
               onClick={registrarCliente}
-              disabled={
-                guardando ||
-                !privacidadAceptada
-              }
-              className="w-full rounded-xl bg-black py-4 text-lg font-bold text-white disabled:cursor-not-allowed disabled:opacity-40"
+              disabled={guardando}
+              className="w-full rounded-xl bg-black py-4 text-lg font-bold text-white disabled:opacity-50"
             >
               {guardando
                 ? "Creando tu tarjeta..."
                 : "Crear mi tarjeta"}
             </button>
-
           </div>
-
 
           <div className="mt-7 border-t pt-6 text-center">
             <p className="text-sm text-gray-500">
@@ -369,9 +252,15 @@ export default function RegistroCliente() {
             </Link>
           </div>
 
+          <p className="mt-6 text-center text-xs leading-5 text-gray-400">
+            Tus datos se utilizarán para
+            gestionar tu participación en el
+            programa de fidelización de{" "}
+            {negocio.nombre}.
+          </p>
+
         </div>
       </div>
     </main>
   )
 }
-
